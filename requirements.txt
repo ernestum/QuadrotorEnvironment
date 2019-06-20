@@ -1,6 +1,4 @@
-tensorflow
 matplotlib
-hyperopt
 numpy
 numpy-quaternion
 sortedcontainers
