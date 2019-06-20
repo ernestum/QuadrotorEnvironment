@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from quadrotor_rl_code.quadrotor_environment.propeller_speed_mapping import PropellerSpeedMapping
+from quadrotor_environment.propeller_speed_mapping import PropellerSpeedMapping
 
 
 def test_direct_control():

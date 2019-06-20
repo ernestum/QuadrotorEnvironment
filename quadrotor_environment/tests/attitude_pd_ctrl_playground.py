@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from hyperopt.hp import uniform
 from hyperopt.plotting import main_plot_vars, main_plot_history
 
-from quadrotor_rl_code.quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
-from quadrotor_rl_code.quadrotor_environment.quadrotor_model import SysState
+from quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
+from quadrotor_environment.quadrotor_model import SysState
 
 
 def eval_params(params: dict):

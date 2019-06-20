@@ -1,8 +1,8 @@
 import numpy as np
 import quaternion
 
-from quadrotor_rl_code.quadrotor_environment.quadrotor_model import QuadrotorModel
-from quadrotor_rl_code.quadrotor_environment.utils import quat2eul
+from quadrotor_environment.quadrotor_model import QuadrotorModel
+from quadrotor_environment.utils import quat2eul
 
 
 class AttitudePDController:

@@ -1,7 +1,7 @@
 import numpy as np
 
-from quadrotor_rl_code.quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
-from quadrotor_rl_code.quadrotor_environment.reward_function import RewardFunction
+from quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
+from quadrotor_environment.reward_function import RewardFunction
 
 
 def test_term_list_length():

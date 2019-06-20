@@ -3,7 +3,7 @@ from typing import Union, Dict, Sequence
 import numpy as np
 import quaternion
 
-from quadrotor_rl_code.quadrotor_environment.quadrotor_model import SysState
+from quadrotor_environment.quadrotor_model import SysState
 
 
 def _parse_noise_spec(spec):

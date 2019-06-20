@@ -2,7 +2,7 @@ import numpy as np
 
 import pytest
 
-from quadrotor_rl_code.quadrotor_environment.observation_history import ObservationHistory
+from quadrotor_environment.observation_history import ObservationHistory
 
 
 @pytest.mark.parametrize("num_observed_past_states", [1, 2, 3])

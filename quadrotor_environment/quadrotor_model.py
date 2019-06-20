@@ -3,7 +3,7 @@ from typing import Sequence, Union
 import numpy as np
 import quaternion
 
-from quadrotor_rl_code.quadrotor_environment.utils import rotate_vector
+from quadrotor_environment.utils import rotate_vector
 
 
 class SysState:

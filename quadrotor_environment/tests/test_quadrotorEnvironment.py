@@ -2,8 +2,8 @@ from unittest import TestCase
 
 import numpy as np
 
-from quadrotor_rl_code.quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
-from quadrotor_rl_code.quadrotor_environment.quadrotor_model import SysState
+from quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
+from quadrotor_environment.quadrotor_model import SysState
 
 
 class TestQuadrotorEnvironment(TestCase):

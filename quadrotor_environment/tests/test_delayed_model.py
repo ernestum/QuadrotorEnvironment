@@ -1,7 +1,7 @@
 import numpy as np
 
 import pytest
-from quadrotor_rl_code.quadrotor_environment.model_delay_wrapper import ModelDelayWrapper
+from quadrotor_environment.model_delay_wrapper import ModelDelayWrapper
 
 
 class LinearTestModel():

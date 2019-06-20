@@ -1,9 +1,8 @@
 import numpy as np
 import quaternion
 
-from quadrotor_rl_code.quadrotor_environment.quadrotor_model import SysState
-from quadrotor_rl_code.quadrotor_environment.utils import inverted_huber_loss, quat2eul, quat2eulzyx, \
-    eulNASA2rotmat, rotate_vector
+from quadrotor_environment.quadrotor_model import SysState
+from quadrotor_environment.utils import inverted_huber_loss, quat2eul, quat2eulzyx, eulNASA2rotmat, rotate_vector
 
 
 class ToObservationMap:

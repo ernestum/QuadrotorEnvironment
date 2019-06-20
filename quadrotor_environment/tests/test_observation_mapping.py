@@ -2,8 +2,8 @@ import numpy as np
 
 import pytest
 
-from quadrotor_rl_code.quadrotor_environment.observation_mapping import ToObservationMap
-from quadrotor_rl_code.quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
+from quadrotor_environment.observation_mapping import ToObservationMap
+from quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
 
 
 @pytest.mark.parametrize("local_observations", [True, False])

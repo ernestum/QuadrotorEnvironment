@@ -1,5 +1,5 @@
 import numpy as np
-from quadrotor_rl_code.quadrotor_environment.quadrotor_model import SysState, QuadrotorModel
+from quadrotor_environment.quadrotor_model import SysState, QuadrotorModel
 
 
 class StateClippingWrapper:

@@ -1,6 +1,5 @@
 tensorflow
 matplotlib
 hyperopt
-tensorforce
 numpy
 numpy-quaternion

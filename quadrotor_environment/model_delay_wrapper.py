@@ -3,7 +3,7 @@ from typing import Union
 import numpy as np
 from sortedcontainers import SortedDict
 
-from quadrotor_rl_code.quadrotor_environment.quadrotor_model import QuadrotorModel, SysState
+from quadrotor_environment.quadrotor_model import QuadrotorModel, SysState
 
 
 class ModelDelayWrapper:

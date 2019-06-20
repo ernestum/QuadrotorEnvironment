@@ -4,8 +4,8 @@ import numpy as np
 
 from gym import Env
 
-from quadrotor_rl_code.quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
-from quadrotor_rl_code.quadrotor_environment.quadrotor_model import SysState
+from quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
+from quadrotor_environment.quadrotor_model import SysState
 
 
 def deep_map(map_fn, data: Union[dict, list]):

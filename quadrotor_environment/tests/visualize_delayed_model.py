@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
-from quadrotor_rl_code.quadrotor_environment.model_delay_wrapper import ModelDelayWrapper
-from quadrotor_rl_code.quadrotor_environment.tests.test_delayed_model import LinearTestModel
+from quadrotor_environment.model_delay_wrapper import ModelDelayWrapper
+from quadrotor_environment.tests.test_delayed_model import LinearTestModel
 
 
 def make_trajectory(delayer):

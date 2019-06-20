@@ -3,8 +3,8 @@ import warnings
 import numpy as np
 from numpy.linalg import norm
 
-from quadrotor_rl_code.quadrotor_environment.quadrotor_model import SysState
-from quadrotor_rl_code.quadrotor_environment.utils import inverted_huber_loss, quat2eulzyx
+from quadrotor_environment.quadrotor_model import SysState
+from quadrotor_environment.utils import inverted_huber_loss, quat2eulzyx
 
 
 class RewardFunction:

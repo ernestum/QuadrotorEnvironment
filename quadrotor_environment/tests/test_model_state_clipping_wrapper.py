@@ -1,8 +1,8 @@
 import numpy as np
 
-from quadrotor_rl_code.quadrotor_environment.model_state_clipping_wrapper import StateClippingWrapper
-from quadrotor_rl_code.quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
-from quadrotor_rl_code.quadrotor_environment.quadrotor_model import QuadrotorModel
+from quadrotor_environment.model_state_clipping_wrapper import StateClippingWrapper
+from quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
+from quadrotor_environment.quadrotor_model import QuadrotorModel
 
 
 def test_state_clipping():
