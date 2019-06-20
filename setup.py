@@ -12,7 +12,6 @@ setup(
     description='OpenAI Gym Environment for Quadrotors',
     classifiers=[
         'Development Status :: 4 - Beta',
-        'Programming Language :: Python :: 3'
     ],
     keywords='quadrotor quadcopter reinforcement learning gym',
     python_requires='>=3',
