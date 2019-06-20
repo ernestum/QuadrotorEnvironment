@@ -5,7 +5,7 @@ from quadrotor_rl_code.quadrotor_environment.tests.test_delayed_model import Lin
 
 
 def make_trajectory(delayer):
-    obs0, _ = delayer.reset(0, 0)
+    obs0, _, _ = delayer.reset(0, 0)
     assert obs0 == 0
 
     actions = [1, 2, 0, -1, -2, 0, 0, 0]

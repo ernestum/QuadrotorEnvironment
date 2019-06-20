@@ -16,6 +16,12 @@ from quadrotor_rl_code.quadrotor_environment.reward_function import RewardFuncti
 from .quadrotor_model import SysState, QuadrotorModel
 from .utils import sample_random_rotation
 
+try:
+    from zerocm import ZCM
+    from zcom import timestamped_vector_double
+except Exception:
+    pass
+
 
 class QuadrotorEnvironment(Env):
     """
@@ -49,7 +55,8 @@ class QuadrotorEnvironment(Env):
                  propeller_speed_mapping_parameters: Dict = dict(),
                  pd_support_parameters: Union[None, Dict] = None,
                  initial_state_parameters: Dict = dict(box_side_length=2, velocity=1, angular_velocity=1),
-                 max_time: float = 10, controller_period: float = 0.01, enable_rendering: bool = False):
+                 max_time: float = 10, controller_period: float = 0.01, enable_rendering: bool = False,
+                 quadrotor_model_parameters_for_preprocessing=None):
         """
         Constructs a new QuadrotorEnvironment with the given parameters.
 
@@ -87,8 +94,15 @@ class QuadrotorEnvironment(Env):
         :param max_time: The maximum time after which an episode in this environment is done.
         :param controller_period: The duration (in seconds simulated time) between two calls to the policy.
         :param enable_rendering: A flag controlling if the environment should be rendered or not.
+        :param quadrotor_model_parameters_for_preprocessing: Some of the preprocessing steps such as the observation
+        computation and the PropellerSpeedMapping use some parameters of the simulation such as the hovering thrust.
+        If we want to base those preprocessing steps on different simulation parameters than the actual simulation, this
+        parameter can be set. If None the original simulation parameters are being used.
         """
         assert reward_base in ['observed_state', 'observed_state_with_noise', 'current_state', 'next_state']
+        if quadrotor_model_parameters_for_preprocessing is None:
+            quadrotor_model_parameters_for_preprocessing = quadrotor_model_parameters
+        quadrotor_model_for_preprocessing = QuadrotorModel(**quadrotor_model_parameters_for_preprocessing)
         self.max_time = max_time
         self.enable_rendering = enable_rendering
 
@@ -98,15 +112,15 @@ class QuadrotorEnvironment(Env):
         self.noised_state = NoisedStateMap(**noise_parameters)
         if observe_prop_rate:
             self.state_to_observation = ToObservationMap(
-                propeller_speed_scale=0.1 / self.simulation_model.hovering_thrust,
+                propeller_speed_scale=0.1 / quadrotor_model_for_preprocessing.hovering_thrust,
                 **observation_mapping_parameters)
         else:
             self.state_to_observation = ToObservationMap(**observation_mapping_parameters)
         self.observation_history = ObservationHistory(**observation_history_parameters)
         self.reward_base = reward_base
-        self.action_to_propeller_speed = PropellerSpeedMapping(self.simulation_model.hovering_thrust, **propeller_speed_mapping_parameters)
+        self.action_to_propeller_speed = PropellerSpeedMapping(quadrotor_model_for_preprocessing.hovering_thrust, **propeller_speed_mapping_parameters)
         if pd_support_parameters is not None:
-            self.attitude_pd = AttitudePDController(self.simulation_model, **pd_support_parameters)
+            self.attitude_pd = AttitudePDController(quadrotor_model_for_preprocessing, **pd_support_parameters)
         else:
             self.attitude_pd = None
 
@@ -193,6 +207,8 @@ class QuadrotorEnvironment(Env):
             initial_propeller_speed = np.ones(4) * self.simulation_model.hovering_thrust
         if initial_state is None:
             initial_state = self.random_state()
+        if initial_state.propeller_speed is None:
+            initial_state.propeller_speed = initial_propeller_speed
         observed_state, initial_dt, initial_obs_age = self.delayed_model.reset(initial_propeller_speed, initial_state)
 
         initial_observation = self.state_to_observation(observed_state, initial_dt, initial_obs_age)
@@ -214,12 +230,34 @@ class QuadrotorEnvironment(Env):
         self.state_to_observation.position_offset = msg.values
 
     def render(self, reward, state, observed_state, thrust):
-        pass
+
+        if self.zcm is None:
+            self.zcm = ZCM("")
+            if self.zcm.good():
+                self.zcm.subscribe("target", timestamped_vector_double, self.on_target_msg)
+                self.zcm.start()
+
+        if self.zcm.good():
+            msg = timestamped_vector_double()
+            msg.ts = int(self.delayed_model.time * 1e9)
+
+            def publish(channel, data):
+                msg.values = data
+                msg.len = len(data)
+                self.zcm.publish(channel, msg)
+
+            publish("quadrotor_viz/quat_pose", np.concatenate([state.position, state.rotation.components]))
+            publish("quadrotor_viz/quat_pose_noised", np.concatenate([observed_state.position, observed_state.rotation.components]))
+            publish("quadrotor_viz/velocity", state.velocity)
+            publish("quadrotor_viz/rotation_rate", state.angular_velocity)
+            publish("quadrotor_viz/rotatorspeed", state.propeller_speed)
+            publish("quadrotor_viz/control", thrust)
+            publish("quadrotor_viz/reward", [reward])
 
     @property
     def time(self):
         return self.delayed_model.time
 
-    def get_current_state(self):
+    def get_current_state(self) -> SysState:
         return self.delayed_model.compute_current_state()
 

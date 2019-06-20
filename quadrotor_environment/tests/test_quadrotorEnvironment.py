@@ -94,12 +94,10 @@ class TestQuadrotorEnvironment(TestCase):
         """
         Tests if the hovering thrust actually makes the quadrotor hover
         """
+        initial_state = SysState(np.zeros(3), np.zeros(3), np.quaternion(1, 0, 0, 0), np.zeros(3), None)
         env = QuadrotorEnvironment()
-        env.reset()
-        initial_state = SysState(np.zeros(3), np.zeros(3), np.quaternion(1, 0, 0, 0), np.zeros(3), )
-        env.simulation_model.x = initial_state
-        initial_observation = env.observation_from_state(initial_state)
+        initial_observation = env.reset(initial_state)
         for _ in range(1000):
-            observation, done, reward = env.execute(np.ones(4)/2)
+            observation, done, reward, _ = env.step(np.ones(4) * 2/3 - 1)
             self.assertTrue(all(np.isclose(observation, initial_observation)))
 

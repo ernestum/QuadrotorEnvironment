@@ -15,11 +15,10 @@ class ToObservationMap:
         * position_offset
         * velocity_offset
         * angular_velocity_offset
-        * rotation_offset
     """
-    __slots__ = "position_offset", "velocity_offset", "angular_velocity_offset", "rotation_offset", \
-                "observed_position", "observed_velocity", "observed_rotation", "observed_angular_velocity", \
-                "observed_propeller_speed", "observed_dt", "observed_observation_age"
+    __slots__ = "position_offset", "velocity_offset", "angular_velocity_offset", "observed_position", \
+                "observed_velocity", "observed_rotation", "observed_angular_velocity", "observed_propeller_speed", \
+                "observed_dt", "observed_observation_age"
 
     def __init__(self, local_observations: bool = True, huber_scaling: bool = False, position_scale: float = 0.5,
                  velocity_scale: float = 0.5, angular_velocity_scale: float = 0.15, propeller_speed_scale: float = 0,
@@ -50,7 +49,6 @@ class ToObservationMap:
         self.position_offset = np.zeros(3)
         self.velocity_offset = np.zeros(3)
         self.angular_velocity_offset = np.zeros(3)
-        self.rotation_offset = np.quaternion(1, 0, 0, 0)
 
         # NOTE: we handle a lot with lambdas here so we can make all the case distinctions once in advance to avoid
         # doing them over and over again during evaluation. This gives us significant speedups.
@@ -65,7 +63,7 @@ class ToObservationMap:
             observed_position_ = lambda state: (state.position - self.position_offset) * position_scale
             observed_velocity_ = lambda state: (state.velocity - self.angular_velocity_offset) * velocity_scale
 
-        observed_rotation_ = lambda state: state.rotation #.apply_to(self.rot_offset) #TODO: apply the transform
+        observed_rotation_ = lambda state: state.rotation
         observed_rotation_rate_ = lambda state: \
             (state.angular_velocity - self.angular_velocity_offset) * angular_velocity_scale
         observed_propeller_speed_ = lambda state: state.propeller_speed * propeller_speed_scale

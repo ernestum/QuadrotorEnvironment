@@ -14,7 +14,7 @@ class PropellerSpeedMapping:
                  relative_max_propeller_acceleration: float = np.infty,
                  acceleration_constrain_mode: str = 'clip', output_control_mode: str = 'direct'):
         """
-        Constructs anew PropellerSpeedMapping with the given parameters.
+        Constructs a new PropellerSpeedMapping with the given parameters.
 
         :param hovering_speed: The absolute speed per propeller, that is needed to make the quadrotor hover.
         :param relative_min_speed: The minimum speed relative to the hovering speed. The resulting absolute minimum
@@ -57,6 +57,21 @@ class PropellerSpeedMapping:
                 return self.previous_relative_speed * hovering_speed, self.previous_relative_speed, actual_relative_acceleration
 
             self.speed_fn = action_to_speed
+        elif output_control_mode == 'thrust':
+            if relative_min_speed < 0:
+                raise ValueError("negative thrust is not possible! Relative min speed must be above 0 when using thrust control")
+            hovering_thrust = hovering_speed ** 2
+            def action_to_speed(a, dt):
+                relative_target_thrust = (a + 1) / 2 * (relative_max_speed - relative_min_speed) + relative_min_speed
+                relative_target_acceleration = (relative_target_thrust - self.previous_relative_speed) / dt
+
+                acceleration_clipped_relative_target_thrust = self.previous_relative_speed + clip_relative_acceleration(relative_target_acceleration) * dt
+                actual_relative_acceleration = (acceleration_clipped_relative_target_thrust - self.previous_relative_speed) / dt
+                self.previous_relative_speed = acceleration_clipped_relative_target_thrust
+                return np.sqrt(self.previous_relative_speed * hovering_thrust), self.previous_relative_speed, actual_relative_acceleration
+
+            self.speed_fn = action_to_speed
+
         elif output_control_mode == 'acceleration':
             if np.isinf(relative_max_propeller_acceleration):
                 raise ValueError("The relative maximum acceleration must be finite when the output_control_mode is set "

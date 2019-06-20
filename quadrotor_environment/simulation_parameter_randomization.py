@@ -1,36 +1,30 @@
+from typing import Union, Sequence, Dict
+
 import numpy as np
 
 from gym import Env
 
 from quadrotor_rl_code.quadrotor_environment.quadrotor_environment import QuadrotorEnvironment
+from quadrotor_rl_code.quadrotor_environment.quadrotor_model import SysState
 
 
-def sample_map_fn(d):
-    if isinstance(d, (list, tuple)) and len(d) == 3 and d[0] == 'randomize':
-        low = np.asarray(d[1])
-        high = np.asarray(d[2])
-        return np.random.rand() * (high - low) + low, False
-    else:
-        return d, True
-
-
-def mean_map_fn(d):
-    if isinstance(d, (list, tuple))  and len(d) == 3 and d[0] == 'randomize':
-        low = np.asarray(d[1])
-        high = np.asarray(d[2])
-        return (high - low)/2, False
-    else:
-        return d, True
-
-
-def deep_map(map_fn, data: dict):
-    mapped_data = dict()
-    for key in data.keys():
-        mapped, recurse = map_fn(data[key])
-        if isinstance(mapped, dict) and recurse:
-            mapped = deep_map(map_fn, mapped)
-        mapped_data[key] = mapped
-    return mapped_data
+def deep_map(map_fn, data: Union[dict, list]):
+    if isinstance(data, dict):
+        mapped_data = dict()
+        for key in data.keys():
+            mapped, recurse = map_fn(data[key])
+            if isinstance(mapped, (dict, list, tuple)) and recurse:
+                mapped = deep_map(map_fn, mapped)
+            mapped_data[key] = mapped
+        return mapped_data
+    if isinstance(data, (list, tuple)):
+        mapped_data = list()
+        for element in data:
+            mapped, recurse = map_fn(element)
+            if isinstance(mapped, (dict, list)) and recurse:
+                mapped = deep_map(map_fn, mapped)
+            mapped_data.append(mapped)
+        return mapped_data
 
 
 class SPRWrappedQuadrotorEnvironment(Env):
@@ -68,15 +62,25 @@ class SPRWrappedQuadrotorEnvironment(Env):
         """
         return self.unwrapped_environment.step(action)
 
-    def reset(self):
+    def reset(self, initial_state: Union[SysState, None] = None,
+              initial_propeller_speed: Union[np.ndarray, None] = None, spr_seed: int = None):
         """
         Randomizes the quadrotor configuration, creates a new QuadrotorEnvironment with the randomized configuration
         and resets it.
         :return: The return value of the environment reset.
         """
+        random = np.random.RandomState(spr_seed)
+        def sample_map_fn(d):
+            if isinstance(d, (list, tuple)) and len(d) == 3 and d[0] == 'randomize':
+                low = np.asarray(d[1])
+                high = np.asarray(d[2])
+                return random.rand() * (high - low) + low, False
+            else:
+                return d, True
+
         new_config = deep_map(sample_map_fn, self.configuration_space)
         self.unwrapped_environment = QuadrotorEnvironment(**new_config)
-        return self.unwrapped_environment.reset()
+        return self.unwrapped_environment.reset(initial_state, initial_propeller_speed)
 
     def render(self, **kwargs):
         """
@@ -92,7 +96,7 @@ class SPRWrappedQuadrotorEnvironment(Env):
 
         :return: The current state of the wrapped environment.
         """
-        return self.unwrapped_environment.compute_current_state()
+        return self.unwrapped_environment.get_current_state()
 
     @property
     def time(self):

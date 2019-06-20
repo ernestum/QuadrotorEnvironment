@@ -46,7 +46,7 @@ def sample_random_rotation2():
 
 
 def sample_random_rotation3():
-    #TODO: this one is the one used by HWANGBO and it looks a lot nicer. But should it look nice? Ask Christoph
+    #TODO: this one is the one used by HWANGBO and it looks a lot nicer. But should it look nice?
     v = np.random.rand(4) * 2 - 1
     v /= np.linalg.norm(v)
     return np.quaternion(*v)

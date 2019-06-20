@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Union
 
 import numpy as np
 import quaternion
@@ -42,7 +42,7 @@ class QuadrotorModel:
                        m: float = 1.43805,
                        I: Sequence[float] = (0.01467, 0.01441, 0.02441),
                        lp: float = 0.16,
-                       kp: float = 1.018841e-5,
+                       kp: Union[float, Sequence[float]] = 1.018841e-5,
                        ip: float = 6.32180911740998e-09,
                        b: float = 4.82e-8,
                  ):
@@ -57,6 +57,7 @@ class QuadrotorModel:
         :param ip: Inertia coefficient of propellers.
         :param b: Drag coefficient of propellers.
         """
+        kp = np.asarray(kp)
 
         self.gravity = g0
         self.mass = m
