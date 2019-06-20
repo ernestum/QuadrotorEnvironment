@@ -3,7 +3,3 @@ python:
   - "3.6"
 virtualenv:
   system_site_packages: true
-
-install:
-  - apt install python3-numba
-  - pip install -r requirements.txt
