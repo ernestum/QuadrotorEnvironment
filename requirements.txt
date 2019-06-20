@@ -3,3 +3,5 @@ matplotlib
 hyperopt
 numpy
 numpy-quaternion
+sortedcontainers
+gym
