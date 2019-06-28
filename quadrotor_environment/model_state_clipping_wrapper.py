@@ -12,8 +12,16 @@ class StateClippingWrapper:
 
     def __init__(self, quadrotor_model: QuadrotorModel,
                  position_bounds=(-np.inf, np.inf),
-                 velocity_bounds=(-5, 5),
+                 velocity_bounds=(-5, 5), #TODO: choose infinity bounds by default
                  angular_velocity_bounds=(-20, 20)):
+
+        def tuplify_bounds(b):
+            if not isinstance(b, (list, tuple)):
+                return (-b, b)
+            return b
+        position_bounds = tuplify_bounds(position_bounds)
+        velocity_bounds = tuplify_bounds(velocity_bounds)
+        angular_velocity_bounds = tuplify_bounds(angular_velocity_bounds)
         assert position_bounds[0] < position_bounds[1]
         assert velocity_bounds[0] < velocity_bounds[1]
         assert angular_velocity_bounds[0] < angular_velocity_bounds[1]
